@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // JavaScript function to toggle password visibility
+        function togglePasswordVisibility() {
+            const passwordFields = document.querySelectorAll('.password-field');
+            const checkbox = document.getElementById('show-password-checkbox');
+
+            passwordFields.forEach(function(passwordField) {
+                if (checkbox.checked) {
+                    passwordField.type = 'text';
+                } else {
+                    passwordField.type = 'password';
+                }
+            });
+        }
+
+        // Function to ensure placeholder text appears and disappears when focused/unfocused
+        function handlePlaceholderText() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.placeholder = ''; // Clear the placeholder when focused
+                });
+                input.addEventListener('blur', () => {
+                    if (!input.value) {
+                        // Set the original placeholder text back if field is empty
+                        input.placeholder = input.dataset.placeholder;
+                    }
+                });
+            });
+        }
+
+        window.onload = handlePlaceholderText;
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-r from-teal-300 to-blue-500">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Create an Account</h2>
+
+        <!-- Success or Error Messages -->
+        {% if messages %}
+            <div class="space-y-4">
+                {% for message in messages %}
+                    <div class="text-green-600 text-center font-medium">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+        
+            <!-- Username -->
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="username"
+                       value="{{ form.username.value|default:'' }}"
+                       class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400"
+                       placeholder="Enter your username" required data-placeholder="Enter your username">
+                {% if form.username.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+                <p class="text-xs text-gray-500 mt-1">Username must be 6–15 characters long with special characters.</p>
+            </div>
+        
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email"
+                       value="{{ form.email.value|default:'' }}"
+                       class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400"
+                       placeholder="Enter your email" required data-placeholder="Enter your email">
+                {% if form.email.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Password1 -->
+            <div>
+                <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="password1"
+                       value="{{ form.password1.value|default:'' }}"
+                       class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 password-field"
+                       placeholder="Enter your password" required data-placeholder="Enter your password">
+                {% if form.password1.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Password2 -->
+            <div>
+                <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" name="password2" id="password2"
+                       value="{{ form.password2.value|default:'' }}"
+                       class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 password-field"
+                       placeholder="Confirm your password" required data-placeholder="Confirm your password">
+                {% if form.password2.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+        
+            <!-- Show Password Checkbox -->
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="show-password-checkbox" onclick="togglePasswordVisibility()" class="h-4 w-4">
+                <label for="show-password-checkbox" class="text-sm text-gray-700">Show Password</label>
+            </div>
+        
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition ease-in-out duration-300">
+                Register
+            </button>
+        </form>
+        
+        <p class="text-center text-sm text-gray-600 mt-4">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-blue-500 hover:underline">Login</a>
+        </p>
+    </div>
+</body>
+</html>

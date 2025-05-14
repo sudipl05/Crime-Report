@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white w-full max-w-xl p-8 rounded-xl shadow border border-gray-200">
+        <h1 class="text-3xl font-semibold text-center text-gray-800 mb-8">✏️ Edit Report</h1>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div>
+                <label for="id_title" class="block text-sm font-medium text-gray-700 mb-1">Crime Type</label>
+                <select id="id_title" name="title" required
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <option value="" disabled {% if not form.title.value %}selected{% endif %}>Select a crime type</option>
+                    <option value="Theft" {% if form.title.value == "Theft" %}selected{% endif %}>Theft</option>
+                    <option value="Assault" {% if form.title.value == "Assault" %}selected{% endif %}>Assault</option>
+                    <option value="Robbery" {% if form.title.value == "Robbery" %}selected{% endif %}>Robbery</option>
+                    <option value="Cyber Crime" {% if form.title.value == "Cyber Crime" %}selected{% endif %}>Cyber Crime</option>
+                    <option value="Other" {% if form.title.value == "Other" %}selected{% endif %}>Other</option>
+                </select>
+                {% if form.title.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="id_description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea name="description" id="id_description" rows="4"
+                          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition resize-none">{{ form.description.value|default_if_none:'' }}</textarea>
+                {% if form.description.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <!-- Location -->
+            <div>
+                <label for="id_location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input type="text" name="location" id="id_location" required
+                    value="{{ form.location.value|default_if_none:'' }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                {% if form.location.errors %}
+                    <p class="text-sm text-red-500 mt-1">{{ form.location.errors.0 }}</p>
+                {% endif %}
+            </div>  
+
+            <!-- Media Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
+
+                <!-- Photo -->
+                <div>
+                    <label for="id_photos" class="block text-sm font-medium text-gray-700 mb-1">Upload Photo</label>
+                    {{ form.photos }}
+                    {% if report.photos %}
+                        <img id="photoPreview" src="{{ report.photos.url }}" alt="Current Photo"
+                             class="mt-2 w-full h-40 object-cover rounded-md border shadow-sm">
+                    {% else %}
+                        <img id="photoPreview" src="" alt="No Photo" class="mt-2 w-full h-40 object-cover rounded-md border shadow-sm hidden">
+                    {% endif %}
+                </div>
+
+                <!-- Video -->
+                <div>
+                    <label for="id_videos" class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
+                    {{ form.videos }}
+                    {% if report.videos %}
+                        <video id="videoPreview" class="mt-2 w-full h-40 object-cover rounded-md border shadow-sm" controls>
+                            <source src="{{ report.videos.url }}" type="video/mp4">
+                        </video>
+                    {% else %}
+                        <video id="videoPreview" class="mt-2 w-full h-40 object-cover rounded-md border shadow-sm hidden" controls>
+                            <source src="" type="video/mp4">
+                        </video>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg shadow-sm transition">
+                ✅ Update Report
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Photo preview logic
+        document.getElementById('id_photos')?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('photoPreview');
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('hidden');
+            }
+        });
+
+        // Video preview logic
+        document.getElementById('id_videos')?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('videoPreview');
+            if (file) {
+                const source = preview.querySelector('source');
+                source.src = URL.createObjectURL(file);
+                preview.load();
+                preview.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
